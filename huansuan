@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>缝纫线长度与重量换算</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>长丝缝纫线长度与重量换算</h2>
+        <label for="denier">D数 (Denier):</label>
+        <input type="number" id="denier" placeholder="输入D数 (例如 150)" required>
+
+        <label for="plies">股数:</label>
+        <input type="number" id="plies" placeholder="输入股数 (例如 3)" required>
+
+        <label for="length">长度 (米):</label>
+        <input type="number" id="length" placeholder="输入长度 (米)" oninput="toggleInput('length')">
+
+        <label for="weight">重量 (克):</label>
+        <input type="number" id="weight" placeholder="输入重量 (克)" oninput="toggleInput('weight')">
+
+        <button onclick="calculate()">计算</button>
+
+        <div id="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>短纤缝纫线长度与重量换算</h2>
+        <label for="yarnCount">支数 (S):</label>
+        <input type="number" id="yarnCount" placeholder="输入支数 (例如 40)" required>
+
+        <label for="pliesShort">股数:</label>
+        <input type="number" id="pliesShort" placeholder="输入股数 (例如 3)" required>
+
+        <label for="lengthShort">长度 (米):</label>
+        <input type="number" id="lengthShort" placeholder="输入长度 (米)" oninput="toggleInputShort('lengthShort')">
+
+        <label for="weightShort">重量 (克):</label>
+        <input type="number" id="weightShort" placeholder="输入重量 (克)" oninput="toggleInputShort('weightShort')">
+
+        <button onclick="calculateShort()">计算</button>
+
+        <div id="resultShort"></div>
+    </div>
+
+    <script>
+        function toggleInput(changedField) {
+            let lengthInput = document.getElementById('length');
+            let weightInput = document.getElementById('weight');
+
+            if (changedField === 'length' && lengthInput.value !== '') {
+                weightInput.disabled = true;
+            } else if (changedField === 'weight' && weightInput.value !== '') {
+                lengthInput.disabled = true;
+            } else {
+                lengthInput.disabled = false;
+                weightInput.disabled = false;
+            }
+        }
+
+        function toggleInputShort(changedField) {
+            let lengthInput = document.getElementById('lengthShort');
+            let weightInput = document.getElementById('weightShort');
+
+            if (changedField === 'lengthShort' && lengthInput.value !== '') {
+                weightInput.disabled = true;
+            } else if (changedField === 'weightShort' && weightInput.value !== '') {
+                lengthInput.disabled = true;
+            } else {
+                lengthInput.disabled = false;
+                weightInput.disabled = false;
+            }
+        }
+
+        function calculate() {
+            let denier = parseFloat(document.getElementById('denier').value);
+            let plies = parseFloat(document.getElementById('plies').value);
+            let length = parseFloat(document.getElementById('length').value);
+            let weight = parseFloat(document.getElementById('weight').value);
+            let result = '';
+
+            const correctionFactor = 1.09;  // 9%的湿度和含油量影响
+
+            if (denier && plies && length && !weight) {
+                weight = (denier * length * plies) / 9000 * correctionFactor;
+                result = `根据输入的长度，重量为 ${weight.toFixed(2)} 克（考虑湿度和含油量影响）。`;
+            } else if (denier && plies && weight && !length) {
+                length = (weight * 9000) / (denier * plies * correctionFactor);
+                result = `根据输入的重量，长度为 ${length.toFixed(2)} 米（考虑湿度和含油量影响）。`;
+            } else {
+                result = '请确保输入D数、股数和长度或重量。';
+            }
+
+            document.getElementById('result').innerHTML = result;
+        }
+
+        function calculateShort() {
+            let yarnCount = parseFloat(document.getElementById('yarnCount').value);
+            let pliesShort = parseFloat(document.getElementById('pliesShort').value);
+            let lengthShort = parseFloat(document.getElementById('lengthShort').value);
+            let weightShort = parseFloat(document.getElementById('weightShort').value);
+            let resultShort = '';
+
+            if (yarnCount && pliesShort && weightShort && !lengthShort) {
+                lengthShort = (weightShort * 1695 * yarnCount * 0.96) / (1000 * pliesShort);
+                resultShort = `根据输入的重量，长度为 ${lengthShort.toFixed(2)} 米。`;
+            } else if (yarnCount && pliesShort && lengthShort && !weightShort) {
+                weightShort = (lengthShort * pliesShort) / (1695 * yarnCount * 0.96 / 1000);
+                resultShort = `根据输入的长度，重量为 ${weightShort.toFixed(2)} 克。`;
+            } else {
+                resultShort = '请确保输入支数、股数和长度或重量。';
+            }
+
+            document.getElementById('resultShort').innerHTML = resultShort;
+        }
+    </script>
+</body>
+</html>
